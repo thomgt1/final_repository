@@ -54,8 +54,7 @@ def emotion_detector(text_to_analyse: str) -> dict:
         # Set all expected keys to None
         for key in ("anger", "disgust", "fear", "joy", "sadness"):
             emotion_data[key] = None
-
-        emotion_data["dominant_emotion"] = None
+emotion_data["dominant_emotion"] = None
 
     elif response.status_code == 500:
         emotion_data = None
