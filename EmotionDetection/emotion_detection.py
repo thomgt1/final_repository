@@ -41,20 +41,35 @@ def emotion_detector(text_to_analyse: str) -> dict:
 
     # Send POST request to the Watson API
     response = requests.post(url, json=payload, headers=headers, timeout=10)
-    response.raise_for_status()  # Raise exception for HTTP errors
 
-    # Parse JSON response
-    formatted_response = json.loads(response.text)
+    emotion_date = {}
+    # If the response status code is 200, extract the label and score from the response
+    if response.status_code == 200:
+        # Parse JSON response
+        formatted_response = json.loads(response.text)
 
-    # Extract emotion dictionary from the first prediction
-    emotion_data = formatted_response[
-        "emotionPredictions"
-    ][0]["emotionMentions"][0]["emotion"]
+        # Extract emotion dictionary from the first prediction
+        emotion_data = formatted_response[
+            "emotionPredictions"
+        ][0]["emotionMentions"][0]["emotion"]
 
-    # Determine the emotion with the highest score
-    dominant_emotion = max(emotion_data, key=emotion_data.get)
+        # Determine the emotion with the highest score
+        dominant_emotion = max(emotion_data, key=emotion_data.get)
 
-    # Add dominant emotion to the dictionary
-    emotion_data["dominant_emotion"] = dominant_emotion
+        # Add dominant emotion to the dictionary
+        emotion_data["dominant_emotion"] = dominant_emotion
+
+
+    elif response.status_code == 400:
+        for key in ('anger', 'disgust', 'fear', 'joy', 'sadness'):
+            emotion_data[key] = None
+        emotion_data["dominant_emotion"] = None
+
+    elif response.status_code == 500:
+        emotion_data = None
+        
+
+    else:
+        emotion_data =  None
 
     return emotion_data
