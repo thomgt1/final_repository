@@ -37,30 +37,29 @@ def sent_detector():
     # Retrieve the text to analyze from the request arguments
     text_to_analyze = request.args.get("textToAnalyze")
 
-    # Run the emotion detector on the provided text
-    response = emotion_detector(text_to_analyze)
 
 
-    if response is None:
-        return "Invalid input! Try again."
+    # emotion_detector now returns (emotion_data, status_code)
+    emotion_data, status_code = emotion_detector(text_to_analyze)
 
-    else:
-        # Extract all emotion scores except the dominant emotion
-        emotions = list(response.items())[:-1]
+    # Watson returned 500 or unexpected error
+    if status_code == 500 or emotion_data is None:
+        return ("Emotion detection service error.", 500)
 
-        # Format emotion scores into a readable string
-        formatted_emotions = ", ".join(f"'{key}': {value}" for key, value in emotions)
+    # Watson returned 400 → invalid text
+    if status_code == 400:
+        return ("Emotion detection failed: invalid text.", 400)
 
-        # Extract the dominant emotion from the response
-        dominant_emotion = response.get("dominant_emotion")
+    # Normal successful case (status_code == 200)
+    emotions = list(emotion_data.items())[:-1]
+    formatted_emotions = ", ".join(f"'{key}': {value}" for key, value in emotions)
+    dominant_emotion = emotion_data.get("dominant_emotion")
 
-
-
-        # Return a formatted string with the detected emotions
-        return (
-            f"For the given statement, the system response is {formatted_emotions}. "
-            f"The dominant emotion is {dominant_emotion}."
-        )
+    return (
+        f"For the given statement, the system response is {formatted_emotions}. "
+        f"The dominant emotion is {dominant_emotion}.",
+        200
+    )
 
 
 if __name__ == "__main__":

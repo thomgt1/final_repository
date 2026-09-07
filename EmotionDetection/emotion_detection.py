@@ -63,4 +63,4 @@ def emotion_detector(text_to_analyse: str) -> dict:
     else:
         emotion_data = None
 
-    return emotion_data
+    return (emotion_data,response.status_code)
