@@ -1,6 +1,6 @@
-''' Executing this function initiates the application of emotion detector to be executed over the Flask channel and deployed on
-    localhost:5000.
-'''
+"""Executing this function initiates the application of emotion detector to be executed
+over the Flask channel and deployed on localhost:5000.
+"""
 # Import Flask, render_template, request from the flask framework package
 from flask import Flask, render_template, request
 
@@ -29,10 +29,13 @@ def sent_analyzer():
     dominant_emotion = response["dominant_emotion"]
     # Check if the dominant_emotion is None, indicating an error or invalid input
     if dominant_emotion is None:
-        return "Invalid input! Try again."
+        return "Invalid test! Please try again!."
     # Return a formatted string with the sentiment label and score
-    return f"For the given statement, the system response is 'anger': {anger_score}, 'disgust': {disgust_score}, 'fear': {fear_score}, 'joy': {joy_score} and 'sadness': {sadness_score}. The dominant emotion is <b>{dominant_emotion}</b>."
-
+    return (
+        f"For the given statement, the system response is 'anger': {anger_score}, "
+        f"'disgust': {disgust_score}, 'fear': {fear_score}, 'joy': {joy_score} "
+        f"and 'sadness': {sadness_score}. The dominant emotion is <b>{dominant_emotion}</b>."
+        )
 @app.route("/")
 def render_index_page():
     ''' This function initiates the rendering of the main application
@@ -43,4 +46,3 @@ def render_index_page():
 if __name__ == "__main__":
     # Execute the flask app and deploy it on localhost:5000
     app.run(host="0.0.0.0", port=5000)
-    
